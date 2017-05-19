@@ -11,6 +11,7 @@ include(ExternalProject)
 # see:
 # http://stackoverflow.com/questions/17446981/cmake-externalproject-add-and-findpackage/23570741
 function (checkout_external_project target repository tag)
+    message(STATUS "Checking out external repository: ${target}")
     set(trigger_build_dir ${CMAKE_BINARY_DIR}/${target})
 
     #mktemp dir in build tree
