@@ -36,13 +36,20 @@ set(DEBUG_SUFFIX          "_d")
 option(BUILD_SHARED_LIBS "build as shared library" OFF)
 option(BUILD_STATIC_LIBS "build as static library" ON)
 
-option(CABL_FORCE_BUILD_DEPENDENCIES   "Force download and build dependencies" OFF)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(CABL_BUILD_DEPENDENCIES 1)
+endif()
+
+option(CABL_FORCE_BUILD_DEPENDENCIES   "Force download and build dependencies" ${CABL_BUILD_DEPENDENCIES})
+
+option(CABL_BUILD_RTMIDI               "Force download and build RtMidi" OFF)
+option(CABL_BUILD_LIBUSB               "Force download and build libusb" OFF)
+option(CABL_BUILD_HIDAPI               "Force download and build hidapi" OFF)
 
 option(CABL_TEST          "Build cabl tests"     ${IS_CABL})
 option(CABL_EXAMPLES      "Build cabl examples"  ${IS_CABL})
 option(CABL_DOCS          "Build cabl docs"      ${IS_CABL})
 option(CABL_PYTHON        "Build python binding" ${IS_CABL})
-
 option(CABL_USE_NETWORK   "Use features that require a network" OFF)
 
 option(COVERALLS          "Turn on coveralls support" OFF)
@@ -135,17 +142,21 @@ message( "[${CABL_BUILD_DATE}] ${CABL_BUILD_DESCRIPTION} ")
 
 # Dependencies ----------------------------------------------------------------------------------- #
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows" OR ( ${CABL_FORCE_BUILD_DEPENDENCIES} AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin") )
+if(${CABL_BUILD_LIBUSB} OR ${CABL_FORCE_BUILD_DEPENDENCIES})
   addLibUSB()
 else()
   find_package(LibUSB REQUIRED)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows" OR ${CABL_FORCE_BUILD_DEPENDENCIES})
+if(${CABL_BUILD_HIDAPI} OR ${CABL_FORCE_BUILD_DEPENDENCIES})
   addHIDAPI()
-  addRtMidi()
 else()
   find_package(HIDAPI REQUIRED)
+endif()
+
+if(${CABL_BUILD_RTMIDI} OR ${CABL_FORCE_BUILD_DEPENDENCIES})
+  addRtMidi()
+else()
   find_package(RtMidi REQUIRED)
 endif()
 
