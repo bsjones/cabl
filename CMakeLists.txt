@@ -36,11 +36,16 @@ set(DEBUG_SUFFIX          "_d")
 option(BUILD_SHARED_LIBS "build as shared library" OFF)
 option(BUILD_STATIC_LIBS "build as static library" ON)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  set(CABL_BUILD_DEPENDENCIES 1)
+option(CABL_FORCE_BUILD_DEPENDENCIES   "Force download and build dependencies" OFF)
+
+set(CABL_BUILD_DEPENDENCIES OFF)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND ${CABL_FORCE_BUILD_DEPENDENCIES})
+  set(CABL_BUILD_DEPENDENCIES ON)
 endif()
 
-option(CABL_FORCE_BUILD_DEPENDENCIES   "Force download and build dependencies" ${CABL_BUILD_DEPENDENCIES})
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  set(CABL_BUILD_DEPENDENCIES OFF)
+endif()
 
 option(CABL_BUILD_RTMIDI               "Force download and build RtMidi" OFF)
 option(CABL_BUILD_LIBUSB               "Force download and build libusb" OFF)
@@ -142,19 +147,19 @@ message( "[${CABL_BUILD_DATE}] ${CABL_BUILD_DESCRIPTION} ")
 
 # Dependencies ----------------------------------------------------------------------------------- #
 
-if(${CABL_BUILD_LIBUSB} OR ${CABL_FORCE_BUILD_DEPENDENCIES})
+if(${CABL_BUILD_LIBUSB} OR ${CABL_BUILD_DEPENDENCIES})
   addLibUSB()
 else()
   find_package(LibUSB REQUIRED)
 endif()
 
-if(${CABL_BUILD_HIDAPI} OR ${CABL_FORCE_BUILD_DEPENDENCIES})
+if(${CABL_BUILD_HIDAPI} OR ${CABL_BUILD_DEPENDENCIES})
   addHIDAPI()
 else()
   find_package(HIDAPI REQUIRED)
 endif()
 
-if(${CABL_BUILD_RTMIDI} OR ${CABL_FORCE_BUILD_DEPENDENCIES})
+if(${CABL_BUILD_RTMIDI} OR ${CABL_BUILD_DEPENDENCIES})
   addRtMidi()
 else()
   find_package(RtMidi REQUIRED)
