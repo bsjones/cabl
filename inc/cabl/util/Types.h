@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(__MINGW32__)
 #define __stdcall
 #endif // WIN32
 
